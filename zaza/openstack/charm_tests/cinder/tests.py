@@ -32,7 +32,7 @@ class CinderTests(test_utils.OpenStackBaseTest):
     @classmethod
     def setUpClass(cls):
         """Run class setup for running tests."""
-        super(CinderTests, cls).setUpClass()
+        super(CinderTests, cls).setUpClass(application_name='cinder')
         cls.cinder_client = openstack_utils.get_cinder_session_client(
             cls.keystone_session)
         cls.nova_client = openstack_utils.get_nova_session_client(
