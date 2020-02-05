@@ -120,6 +120,10 @@ class CinderTests(test_utils.OpenStackBaseTest):
             vol_from_snap.id,
             expected_status="available",
             msg="Volume status wait")
+        openstack_utils.delete_resource(
+            self.cinder_client.volumes,
+            vol_from_snap.id,
+            msg="volume")
 
     def test_120_volume_force_delete(self):
         """Test force deleting a volume."""

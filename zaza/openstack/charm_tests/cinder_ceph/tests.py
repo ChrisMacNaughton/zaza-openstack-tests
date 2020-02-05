@@ -22,9 +22,10 @@ import zaza.model
 import zaza.openstack.charm_tests.test_utils as test_utils
 import zaza.openstack.utilities.ceph as ceph_utils
 import zaza.openstack.utilities.openstack as openstack_utils
+import zaza.utilities.exceptions as zaza_exceptions
 
 
-class CinderTests(test_utils.OpenStackBaseTest):
+class CinderCephTests(test_utils.OpenStackBaseTest):
     """Encapsulate Cinder Ceph functional tests."""
 
     RESOURCE_PREFIX = 'zaza-cinder'
@@ -32,7 +33,7 @@ class CinderTests(test_utils.OpenStackBaseTest):
     @classmethod
     def setUpClass(cls):
         """Run class setup for running tests."""
-        super(CinderTests, cls).setUpClass()
+        super(CinderCephTests, cls).setUpClass()
         cls.cinder_client = openstack_utils.get_cinder_session_client(
             cls.keystone_session)
 
@@ -47,7 +48,11 @@ class CinderTests(test_utils.OpenStackBaseTest):
         pools = ceph_utils.get_ceph_pools(unit_name)
         results.append(pools)
 
-        self.assertEqual(expected_pools, results)
+        for expected_pool in expected_pools:
+            if expected_pool not in pools:
+                msg = ('{} does not have pool: '
+                       '{}'.format(unit_name, expected_pool))
+                raise zaza_exceptions.CephPoolNotFound(msg)
 
     def test_410_ceph_cinder_vol_create_pool_inspect(self):
         """Validate that cinder volummes appear on ceph."""
